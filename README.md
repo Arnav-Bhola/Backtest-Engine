@@ -62,6 +62,7 @@ Required Dependencies:
 - pandas
 - matplotlib
 - seaborn
+
 Usage: `main_backtest.ipynb` has all prewritten code for the sma crossover, run all cells of the jupyter notebook to see it working.
 
 ## Planned Updates
