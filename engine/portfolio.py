@@ -1,4 +1,6 @@
 from engine.events import OrderEvent
+from engine.strategy import SignalType
+from collections import deque
 
 class Portfolio():
     def __init__(self, initial_balance=100000):
@@ -12,7 +14,7 @@ class Portfolio():
         self.realized_pnl=0.0
         self.unrealized_pnl=0.0
         self.total_pnl = self.unrealized_pnl + self.realized_pnl
-        self.event_queue=[]
+        self.event_queue=deque()
 
     def update_price(self, symbol, bar):
         """Update the current price of a symbol."""
@@ -25,10 +27,10 @@ class Portfolio():
 
         self.order_size = 1  # Default order size, can be calculated based on strategy
 
-        if action == "Buy":
+        if action == SignalType.BUY:
             if self.cash >= self.current_prices[symbol] * self.order_size:
                 return OrderEvent(symbol, action, self.order_size)
-        elif action == "Sell":
+        elif action == SignalType.SELL:
             if symbol in self.positions and self.positions[symbol] >= self.order_size:
                 return OrderEvent(symbol, action, self.order_size)
         else:
@@ -41,7 +43,7 @@ class Portfolio():
         quantity = fill_event.quantity
         price = fill_event.price
 
-        if action == "Buy":
+        if action == SignalType.BUY:
             prev_quantity = self.positions.get(symbol, 0)
             prev_price = self.cost_basis.get(symbol, 0)
             new_quantity = prev_quantity + quantity
@@ -55,7 +57,7 @@ class Portfolio():
             self.cost_basis[symbol] = new_cost_basis
             self.cash -= price * quantity
         
-        elif action == "Sell":
+        elif action == SignalType.SELL:
             cost = self.cost_basis[symbol]
             pnl = (price - cost) * quantity
             self.realized_pnl += pnl

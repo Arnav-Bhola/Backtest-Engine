@@ -1,4 +1,10 @@
 from engine.data_handler import DataHandler
+from enum import Enum
+
+class SignalType(Enum):
+    BUY = "Buy"
+    SELL = "Sell"
+    HOLD = "Hold"
 
 class Strategy():
     def __init__(self, threshold, fast_window, slow_window):
@@ -21,29 +27,28 @@ class Strategy():
                 self.previous_day = "Below"
             else:
                 self.previous_day = None
-            return "Hold"
+            return SignalType.HOLD
 
         if self.previous_day == "Above":
             if below:
                 self.previous_day = "Below"
-                return "Sell"
+                return SignalType.SELL
             elif above:
                 self.previous_day = "Above"
             else:
                 self.previous_day = None
-            return "Hold"
-
+            return SignalType.HOLD
         if self.previous_day == "Below":
             if above:
                 self.previous_day = "Above"
-                return "Buy"
+                return SignalType.BUY
             elif below:
                 self.previous_day = "Below"
             else:
                 self.previous_day = None
-            return "Hold"
+            return SignalType.HOLD
         
-        return "Hold"
+        return SignalType.HOLD
 
 if __name__ == "__main__":
     ticker = "AAPL"
